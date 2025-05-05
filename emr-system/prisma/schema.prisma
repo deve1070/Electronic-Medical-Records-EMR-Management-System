@@ -1,0 +1,102 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./emr.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Users {
+  user_id       Int         @id @default(autoincrement())
+  username      String      @unique
+  password_hash String
+  role          String      // 'Doctor', 'Nurse', 'Admin', 'LabStaff'
+  full_name     String
+  created_at    DateTime    @default(now())
+  doctors       Doctors?
+  lab_tests     LabTests[]  @relation("UploadedBy")
+  access_logs   AccessLogs[]
+}
+
+model Doctors {
+  doctor_id      Int         @id
+  specialty      String
+  license_number String      @unique
+  user           Users       @relation(fields: [doctor_id], references: [user_id])
+  medical_history MedicalHistory[]
+  diagnoses      Diagnoses[]
+}
+
+model Patients {
+
+  patient_id     Int         @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  date_of_birth  DateTime
+  gender         String      // 'Male', 'Female', 'Other'
+  contact_number String?
+  created_at     DateTime    @default(now())
+  allergies      Allergies[]
+  medical_history MedicalHistory[]
+  lab_tests      LabTests[]
+  diagnoses      Diagnoses[]
+  access_logs    AccessLogs[]
+}
+
+model Allergies {
+  allergy_id    Int         @id @default(autoincrement())
+  patient_id    Int
+  allergen      String
+  reaction      String?
+  recorded_date DateTime
+  patient       Patients    @relation(fields: [patient_id], references: [patient_id])
+}
+
+model MedicalHistory {
+  history_id     Int         @id @default(autoincrement())
+  patient_id     Int
+  condition_name String
+  diagnosis_date DateTime
+  recovery_date  DateTime?
+  status         String      // 'Active', 'Recovered', 'Chronic'
+  doctor_id      Int
+  notes          String?
+  patient        Patients    @relation(fields: [patient_id], references: [patient_id])
+  doctor         Doctors     @relation(fields: [doctor_id], references: [doctor_id])
+}
+
+model LabTests {
+  test_id      Int         @id @default(autoincrement())
+  patient_id   Int
+  test_name    String
+  test_date    DateTime
+  result       String
+  uploaded_by  Int
+  notes        String?
+  patient      Patients    @relation(fields: [patient_id], references: [patient_id])
+  uploader     Users       @relation("UploadedBy", fields: [uploaded_by], references: [user_id])
+}
+
+model Diagnoses {
+  diagnosis_id   Int         @id @default(autoincrement())
+  patient_id     Int
+  doctor_id      Int
+  disease_name   String
+  diagnosis_date DateTime
+  status         String      // 'Active', 'Recovered', 'Closed'
+  notes          String?
+  patient        Patients    @relation(fields: [patient_id], references: [patient_id])
+  doctor         Doctors     @relation(fields: [doctor_id], references: [doctor_id])
+}
+
+model AccessLogs {
+  log_id       Int         @id @default(autoincrement())
+  user_id      Int
+  patient_id   Int
+  access_type  String      // 'View', 'Edit', 'Share'
+  access_time  DateTime    @default(now())
+  details      String?
+  user         Users       @relation(fields: [user_id], references: [user_id])
+  patient      Patients    @relation(fields: [patient_id], references: [patient_id])
+}
