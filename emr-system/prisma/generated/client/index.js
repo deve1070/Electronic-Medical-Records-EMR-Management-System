@@ -230,7 +230,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/dmk/Electronic-Medical-Records-EMR-Management-System/emr-system/prisma/generated/client",
+      "value": "/home/habtsh/Projects/Electronic-Medical-Records-EMR-Management-System/emr-system/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -244,11 +244,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/dmk/Electronic-Medical-Records-EMR-Management-System/emr-system/prisma/schema.prisma",
+    "sourceFilePath": "/home/habtsh/Projects/Electronic-Medical-Records-EMR-Management-System/emr-system/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../..",
   "clientVersion": "6.7.0",
@@ -257,7 +258,6 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

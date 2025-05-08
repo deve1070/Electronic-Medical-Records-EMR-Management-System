@@ -4,29 +4,49 @@ const { hash } = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
+  // Clear all tables before seeding to avoid unique constraint errors
+  await prisma.cases.deleteMany({});
+  await prisma.diagnoses.deleteMany({});
+  await prisma.medicalHistory.deleteMany({});
+  await prisma.labResults.deleteMany({});
+  await prisma.labOrders.deleteMany({});
+  await prisma.accessLogs.deleteMany({});
+  await prisma.doctors.deleteMany({});
+  await prisma.patients.deleteMany({});
+  await prisma.diseases.deleteMany({});
+  await prisma.users.deleteMany({});
+
   // Create users
   const password_hash = await hash('password123', 12);
-  
+
   const users = await Promise.all([
     prisma.users.create({
       data: {
-        username: 'johndoe',
+        username: 'johndoe_admin', // Changed to make it unique
         password_hash,
         full_name: 'John Doe',
-        role: 'patient',
+        role: 'admin',
       },
     }),
     prisma.users.create({
       data: {
-        username: 'janesmith',
+        username: 'johndoe_doctor', // Changed to make it unique
         password_hash,
-        full_name: 'Jane Smith',
+        full_name: 'John Doe',
         role: 'doctor',
       },
     }),
     prisma.users.create({
       data: {
-        username: 'mikejohnson',
+        username: 'record_officer', // Changed to make it unique
+        password_hash,
+        full_name: 'Record Officer',
+        role: 'record_officer',
+      },
+    }),
+    prisma.users.create({
+      data: {
+        username: 'mikejohnson', // Already unique
         password_hash,
         full_name: 'Mike Johnson',
         role: 'technician',

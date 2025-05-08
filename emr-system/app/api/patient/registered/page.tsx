@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import RegisteredPatients from '../../../components/RegisteredPatients';
+import RegisteredPatients from '../../../../components/RegisteredPatients';
 
 export default async function RegisteredPatientsPage() {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'doctor') {
+  if (!session || session.user.role !== 'record_officer') {
     redirect('/auth/signin');
   }
 
