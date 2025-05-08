@@ -1,102 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
 datasource db {
   provider = "sqlite"
   url      = "file:./emr.db"
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Users {
-  user_id       Int         @id @default(autoincrement())
-  username      String      @unique
+  user_id       Int           @id @default(autoincrement())
+  username      String        @unique
   password_hash String
-  role          String      // 'Doctor', 'Nurse', 'Admin', 'LabStaff'
   full_name     String
-  created_at    DateTime    @default(now())
-  doctors       Doctors?
-  lab_tests     LabTests[]  @relation("UploadedBy")
-  access_logs   AccessLogs[]
-}
-
-model Doctors {
-  doctor_id      Int         @id
-  specialty      String
-  license_number String      @unique
-  user           Users       @relation(fields: [doctor_id], references: [user_id])
-  medical_history MedicalHistory[]
-  diagnoses      Diagnoses[]
+  role          String
+  doctor        Doctors?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  LabOrders     LabOrders[]   @relation("OrderedBy")
+  MedicalHistory MedicalHistory[] @relation("Technician")
+  LabResults    LabResults[]  @relation("Technician")
+  AccessLogs    AccessLogs[]  @relation("User")
 }
 
 model Patients {
-
-  patient_id     Int         @id @default(autoincrement())
-  first_name     String
-  last_name      String
+  patient_id     Int           @id @default(autoincrement())
+  full_name      String
   date_of_birth  DateTime
-  gender         String      // 'Male', 'Female', 'Other'
-  contact_number String?
-  created_at     DateTime    @default(now())
-  allergies      Allergies[]
-  medical_history MedicalHistory[]
-  lab_tests      LabTests[]
-  diagnoses      Diagnoses[]
-  access_logs    AccessLogs[]
+  gender         String
+  phone_number   String        @unique
+  address        String
+  allergies      String?
+  is_active      Boolean       @default(true)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  MedicalHistory MedicalHistory[]
+  LabOrders      LabOrders[]
+  LabResults     LabResults[]
+  Diagnoses      Diagnoses[]
+  Cases          Cases[]
+  AccessLogs     AccessLogs[]  @relation("Patient")
 }
 
-model Allergies {
-  allergy_id    Int         @id @default(autoincrement())
-  patient_id    Int
-  allergen      String
-  reaction      String?
-  recorded_date DateTime
-  patient       Patients    @relation(fields: [patient_id], references: [patient_id])
+model Doctors {
+  doctor_id   Int       @id @default(autoincrement())
+  user_id     Int       @unique
+  specialty   String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  user        Users     @relation(fields: [user_id], references: [user_id])
+  Cases       Cases[]
 }
 
 model MedicalHistory {
-  history_id     Int         @id @default(autoincrement())
-  patient_id     Int
-  condition_name String
-  diagnosis_date DateTime
-  recovery_date  DateTime?
-  status         String      // 'Active', 'Recovered', 'Chronic'
-  doctor_id      Int
-  notes          String?
-  patient        Patients    @relation(fields: [patient_id], references: [patient_id])
-  doctor         Doctors     @relation(fields: [doctor_id], references: [doctor_id])
+  history_id    Int       @id @default(autoincrement())
+  patient_id    Int
+  technician_id Int
+  record_date   DateTime
+  description   String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  patient       Patients  @relation(fields: [patient_id], references: [patient_id])
+  technician    Users     @relation("Technician", fields: [technician_id], references: [user_id])
 }
 
-model LabTests {
-  test_id      Int         @id @default(autoincrement())
-  patient_id   Int
-  test_name    String
-  test_date    DateTime
-  result       String
-  uploaded_by  Int
-  notes        String?
-  patient      Patients    @relation(fields: [patient_id], references: [patient_id])
-  uploader     Users       @relation("UploadedBy", fields: [uploaded_by], references: [user_id])
+model LabOrders {
+  order_id    Int          @id @default(autoincrement())
+  patient_id  Int
+  ordered_by  Int
+  test_type   String
+  order_date  DateTime
+  status      String
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  patient     Patients     @relation(fields: [patient_id], references: [patient_id])
+  orderedBy   Users        @relation("OrderedBy", fields: [ordered_by], references: [user_id])
+  LabResults  LabResults[]
+}
+
+model LabResults {
+  result_id     Int       @id @default(autoincrement())
+  patient_id    Int
+  technician_id Int
+  order_id      Int
+  test_date     DateTime
+  test_type     String
+  result_value  Float
+  unit          String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  patient       Patients  @relation(fields: [patient_id], references: [patient_id])
+  technician    Users     @relation("Technician", fields: [technician_id], references: [user_id])
+  order         LabOrders @relation(fields: [order_id], references: [order_id])
+}
+
+model Diseases {
+  disease_id    Int         @id @default(autoincrement())
+  disease_name  String      @unique
+  description   String?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  Diagnoses     Diagnoses[]
 }
 
 model Diagnoses {
-  diagnosis_id   Int         @id @default(autoincrement())
+  diagnosis_id   Int        @id @default(autoincrement())
   patient_id     Int
-  doctor_id      Int
-  disease_name   String
+  disease_id     Int
   diagnosis_date DateTime
-  status         String      // 'Active', 'Recovered', 'Closed'
-  notes          String?
-  patient        Patients    @relation(fields: [patient_id], references: [patient_id])
-  doctor         Doctors     @relation(fields: [doctor_id], references: [doctor_id])
+  status         String
+  recovery_date  DateTime?
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  patient        Patients   @relation(fields: [patient_id], references: [patient_id])
+  disease        Diseases   @relation(fields: [disease_id], references: [disease_id])
+  Cases          Cases[]
+}
+
+model Cases {
+  case_id       Int       @id @default(autoincrement())
+  patient_id    Int
+  doctor_id     Int
+  diagnosis_id  Int
+  case_date     DateTime
+  status        String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  patient       Patients  @relation(fields: [patient_id], references: [patient_id])
+  doctor        Doctors   @relation(fields: [doctor_id], references: [doctor_id])
+  diagnosis     Diagnoses @relation(fields: [diagnosis_id], references: [diagnosis_id])
 }
 
 model AccessLogs {
-  log_id       Int         @id @default(autoincrement())
-  user_id      Int
-  patient_id   Int
-  access_type  String      // 'View', 'Edit', 'Share'
-  access_time  DateTime    @default(now())
-  details      String?
-  user         Users       @relation(fields: [user_id], references: [user_id])
-  patient      Patients    @relation(fields: [patient_id], references: [patient_id])
+  log_id        Int       @id @default(autoincrement())
+  user_id       Int
+  patient_id    Int
+  access_time   DateTime  @default(now())
+  action        String
+  resource_type String
+  resource_id   Int
+  created_at    DateTime  @default(now())
+  user          Users     @relation("User", fields: [user_id], references: [user_id])
+  patient       Patients  @relation("Patient", fields: [patient_id], references: [patient_id])
 }
