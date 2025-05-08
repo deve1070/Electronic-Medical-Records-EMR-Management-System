@@ -2,42 +2,26 @@
   "name": "emr-system",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
-    "prisma:seed": "node prisma/seed.js"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
+    "prisma:seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "dependencies": {
-    "@radix-ui/react-popover": "^1.1.13",
-    "@radix-ui/react-select": "^2.2.4",
-    "@radix-ui/react-slot": "^1.2.2",
-    "@types/bcryptjs": "^3.0.0",
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.2",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
-    "lucide-react": "^0.508.0",
-    "next": "14.2.15",
-    "next-auth": "4.24.11",
+    "@prisma/client": "6.7.0",
+    "bcrypt": "5.1.1",
+    "next": "^14.2.28",
+    "next-auth": "^4.24.11",
+    "prisma": "6.7.0",
     "react": "18.3.1",
-    "react-day-picker": "^9.6.7",
-    "react-dom": "18.3.1",
-    "tailwind-merge": "^3.2.0",
-    "zod": "3.24.0"
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.1.0",
-    "@prisma/client": "^6.7.0",
-    "@types/bcrypt": "^5.0.2",
+    "@types/bcrypt": "5.0.2",
     "@types/node": "20.16.11",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.0",
@@ -45,9 +29,8 @@
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.15",
     "postcss": "8.4.47",
-    "prisma": "^6.7.0",
     "tailwindcss": "3.4.13",
-    "ts-node": "^10.9.2",
+    "ts-node": "10.9.2",
     "typescript": "5.6.3"
   }
 }

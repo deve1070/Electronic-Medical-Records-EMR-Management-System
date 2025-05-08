@@ -9,18 +9,13 @@ datasource db {
 }
 
 model Users {
-  user_id        Int              @id @default(autoincrement())
-  username       String           @unique
-  password_hash  String
-  full_name      String
-  role           String
-  doctor         Doctors?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
-  LabOrders      LabOrders[]      @relation("OrderedBy")
-  MedicalHistory MedicalHistory[] @relation("Technician")
-  LabResults     LabResults[]     @relation("Technician")
-  AccessLogs     AccessLogs[]     @relation("User")
+  user_id       Int          @id @default(autoincrement())
+  username      String       @unique
+  full_name     String
+  role          String
+  password_hash String
+  doctors       Doctors?
+  AccessLogs    AccessLogs[]
 }
 
 model Patients {
@@ -30,116 +25,76 @@ model Patients {
   gender         String
   phone_number   String           @unique
   address        String
-  allergies      String?
-  is_active      Boolean          @default(true)
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
   MedicalHistory MedicalHistory[]
-  LabOrders      LabOrders[]
-  LabResults     LabResults[]
-  Diagnoses      Diagnoses[]
   Cases          Cases[]
-  AccessLogs     AccessLogs[]     @relation("Patient")
+  LabOrders      LabOrders[]
 }
 
 model Doctors {
-  doctor_id  Int      @id @default(autoincrement())
-  user_id    Int      @unique
-  specialty  String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  user       Users    @relation(fields: [user_id], references: [user_id])
-  Cases      Cases[]
-}
-
-model MedicalHistory {
-  history_id    Int      @id @default(autoincrement())
-  patient_id    Int
-  technician_id Int
-  record_date   DateTime
-  description   String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  patient       Patients @relation(fields: [patient_id], references: [patient_id])
-  technician    Users    @relation("Technician", fields: [technician_id], references: [user_id])
-}
-
-model LabOrders {
-  order_id   Int          @id @default(autoincrement())
-  patient_id Int
-  ordered_by Int
-  test_type  String
-  order_date DateTime
-  status     String
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  patient    Patients     @relation(fields: [patient_id], references: [patient_id])
-  orderedBy  Users        @relation("OrderedBy", fields: [ordered_by], references: [user_id])
-  LabResults LabResults[]
-}
-
-model LabResults {
-  result_id     Int       @id @default(autoincrement())
-  patient_id    Int
-  technician_id Int
-  order_id      Int
-  test_date     DateTime
-  test_type     String
-  result_value  Float
-  unit          String
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  patient       Patients  @relation(fields: [patient_id], references: [patient_id])
-  technician    Users     @relation("Technician", fields: [technician_id], references: [user_id])
-  order         LabOrders @relation(fields: [order_id], references: [order_id])
+  doctor_id Int     @id @default(autoincrement())
+  user_id   Int     @unique
+  user      Users   @relation(fields: [user_id], references: [user_id])
+  Cases     Cases[]
 }
 
 model Diseases {
   disease_id   Int         @id @default(autoincrement())
   disease_name String      @unique
-  description  String?
-  created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
   Diagnoses    Diagnoses[]
 }
 
-model Diagnoses {
-  diagnosis_id   Int       @id @default(autoincrement())
+model MedicalHistory {
+  history_id     Int      @id @default(autoincrement())
   patient_id     Int
-  disease_id     Int
+  patient        Patients @relation(fields: [patient_id], references: [patient_id])
+  condition      String
   diagnosis_date DateTime
-  status         String
-  recovery_date  DateTime?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-  patient        Patients  @relation(fields: [patient_id], references: [patient_id])
-  disease        Diseases  @relation(fields: [disease_id], references: [disease_id])
-  Cases          Cases[]
 }
 
 model Cases {
-  case_id      Int       @id @default(autoincrement())
-  patient_id   Int
-  doctor_id    Int
-  diagnosis_id Int
-  case_date    DateTime
-  status       String
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  patient      Patients  @relation(fields: [patient_id], references: [patient_id])
-  doctor       Doctors   @relation(fields: [doctor_id], references: [doctor_id])
-  diagnosis    Diagnoses @relation(fields: [diagnosis_id], references: [diagnosis_id])
+  case_id    Int         @id @default(autoincrement())
+  patient_id Int
+  doctor_id  Int
+  patient    Patients    @relation(fields: [patient_id], references: [patient_id])
+  doctor     Doctors     @relation(fields: [doctor_id], references: [doctor_id])
+  case_date  DateTime
+  notes      String
+  Diagnoses  Diagnoses[]
+  LabOrders  LabOrders[]
+}
+
+model Diagnoses {
+  diagnosis_id   Int      @id @default(autoincrement())
+  case_id        Int
+  disease_id     Int
+  case           Cases    @relation(fields: [case_id], references: [case_id])
+  disease        Diseases @relation(fields: [disease_id], references: [disease_id])
+  diagnosis_date DateTime
+}
+
+model LabOrders {
+  order_id   Int          @id @default(autoincrement())
+  case_id    Int
+  patient_id Int
+  case       Cases        @relation(fields: [case_id], references: [case_id])
+  patient    Patients     @relation(fields: [patient_id], references: [patient_id])
+  order_date DateTime
+  test_type  String
+  LabResults LabResults[]
+}
+
+model LabResults {
+  result_id   Int       @id @default(autoincrement())
+  order_id    Int
+  order       LabOrders @relation(fields: [order_id], references: [order_id])
+  result_date DateTime
+  result_data String
 }
 
 model AccessLogs {
-  log_id        Int      @id @default(autoincrement())
-  user_id       Int
-  patient_id    Int
-  access_time   DateTime @default(now())
-  action        String
-  resource_type String
-  resource_id   Int
-  created_at    DateTime @default(now())
-  user          Users    @relation("User", fields: [user_id], references: [user_id])
-  patient       Patients @relation("Patient", fields: [patient_id], references: [patient_id])
+  log_id      Int      @id @default(autoincrement())
+  user_id     Int
+  user        Users    @relation(fields: [user_id], references: [user_id])
+  access_time DateTime
+  action      String
 }
