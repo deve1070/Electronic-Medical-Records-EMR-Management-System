@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth';
+import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import prisma from '../../../../lib/prisma';
 import bcryptjs from 'bcryptjs';
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
@@ -22,7 +22,7 @@ export const authOptions = {
             where: { username: credentials.username },
           });
 
-          if (!user) {
+          if (!user || !user.is_active) {
             return null;
           }
 
@@ -45,33 +45,29 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      try {
-        if (user) {
-          token.id = user.id;
-          token.role = user.role;
-        }
-        return token;
-      } catch (error) {
-        console.error('JWT callback error:', error);
-        return token;
+    async jwt({ token, user }: { token: any; user: any }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
       }
+      return token;
     },
-    async session({ session, token }) {
-      try {
-        if (session.user) {
-          session.user.id = token.id;
-          session.user.role = token.role;
-        }
-        return session;
-      } catch (error) {
-        console.error('Session callback error:', error);
-        return session;
+    async session({ session, token }: { session: any; token: any }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
       }
+      return session;
     },
   },
   pages: {
     signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    error: '/auth/error',
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 };
 

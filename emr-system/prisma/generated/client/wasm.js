@@ -123,6 +123,8 @@ exports.Prisma.UsersScalarFieldEnum = {
   password_hash: 'password_hash',
   full_name: 'full_name',
   role: 'role',
+  is_active: 'is_active',
+  last_login: 'last_login',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -144,6 +146,8 @@ exports.Prisma.DoctorsScalarFieldEnum = {
   doctor_id: 'doctor_id',
   user_id: 'user_id',
   specialty: 'specialty',
+  license_number: 'license_number',
+  is_available: 'is_available',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -153,7 +157,7 @@ exports.Prisma.MedicalHistoryScalarFieldEnum = {
   patient_id: 'patient_id',
   technician_id: 'technician_id',
   record_date: 'record_date',
-  description: 'description',
+  notes: 'notes',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -161,23 +165,23 @@ exports.Prisma.MedicalHistoryScalarFieldEnum = {
 exports.Prisma.LabOrdersScalarFieldEnum = {
   order_id: 'order_id',
   patient_id: 'patient_id',
+  doctor_id: 'doctor_id',
   ordered_by: 'ordered_by',
   test_type: 'test_type',
-  order_date: 'order_date',
   status: 'status',
+  priority: 'priority',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
 
 exports.Prisma.LabResultsScalarFieldEnum = {
   result_id: 'result_id',
+  order_id: 'order_id',
   patient_id: 'patient_id',
   technician_id: 'technician_id',
-  order_id: 'order_id',
-  test_date: 'test_date',
-  test_type: 'test_type',
-  result_value: 'result_value',
-  unit: 'unit',
+  result_data: 'result_data',
+  status: 'status',
+  is_positive: 'is_positive',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -186,6 +190,7 @@ exports.Prisma.DiseasesScalarFieldEnum = {
   disease_id: 'disease_id',
   disease_name: 'disease_name',
   description: 'description',
+  icd_code: 'icd_code',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -193,10 +198,11 @@ exports.Prisma.DiseasesScalarFieldEnum = {
 exports.Prisma.DiagnosesScalarFieldEnum = {
   diagnosis_id: 'diagnosis_id',
   patient_id: 'patient_id',
+  doctor_id: 'doctor_id',
   disease_id: 'disease_id',
-  diagnosis_date: 'diagnosis_date',
-  status: 'status',
-  recovery_date: 'recovery_date',
+  condition: 'condition',
+  notes: 'notes',
+  severity: 'severity',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -205,8 +211,20 @@ exports.Prisma.CasesScalarFieldEnum = {
   case_id: 'case_id',
   patient_id: 'patient_id',
   doctor_id: 'doctor_id',
-  diagnosis_id: 'diagnosis_id',
-  case_date: 'case_date',
+  status: 'status',
+  priority: 'priority',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.PrescriptionsScalarFieldEnum = {
+  prescription_id: 'prescription_id',
+  patient_id: 'patient_id',
+  doctor_id: 'doctor_id',
+  prescribed_by: 'prescribed_by',
+  medication: 'medication',
+  dosage: 'dosage',
+  instructions: 'instructions',
   status: 'status',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -216,11 +234,41 @@ exports.Prisma.AccessLogsScalarFieldEnum = {
   log_id: 'log_id',
   user_id: 'user_id',
   patient_id: 'patient_id',
-  access_time: 'access_time',
   action: 'action',
-  resource_type: 'resource_type',
-  resource_id: 'resource_id',
-  created_at: 'created_at'
+  resource: 'resource',
+  details: 'details',
+  timestamp: 'timestamp',
+  ip_address: 'ip_address'
+};
+
+exports.Prisma.SystemLogsScalarFieldEnum = {
+  log_id: 'log_id',
+  user_id: 'user_id',
+  action: 'action',
+  details: 'details',
+  timestamp: 'timestamp',
+  ip_address: 'ip_address'
+};
+
+exports.Prisma.UserSessionsScalarFieldEnum = {
+  session_id: 'session_id',
+  user_id: 'user_id',
+  token: 'token',
+  expires_at: 'expires_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.RecoveryRecordsScalarFieldEnum = {
+  record_id: 'record_id',
+  patient_id: 'patient_id',
+  doctor_id: 'doctor_id',
+  disease_id: 'disease_id',
+  diagnosis_date: 'diagnosis_date',
+  recovery_date: 'recovery_date',
+  notes: 'notes',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.SortOrder = {
@@ -244,7 +292,11 @@ exports.Prisma.ModelName = {
   Diseases: 'Diseases',
   Diagnoses: 'Diagnoses',
   Cases: 'Cases',
-  AccessLogs: 'AccessLogs'
+  Prescriptions: 'Prescriptions',
+  AccessLogs: 'AccessLogs',
+  SystemLogs: 'SystemLogs',
+  UserSessions: 'UserSessions',
+  RecoveryRecords: 'RecoveryRecords'
 };
 
 /**

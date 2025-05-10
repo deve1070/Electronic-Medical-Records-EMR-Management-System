@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export default async function LabUploadPage({ searchParams }: { searchParams: { orderId?: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'lab_tech') {
+  if (!session || session.user.role !== 'TECHNICIAN') {
     redirect('/auth/signin');
   }
 

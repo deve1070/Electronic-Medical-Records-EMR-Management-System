@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import LabOrders from '../../../components/LabOrders';
+import LabOrders from '@/components/LabOrders';
 
 export default async function LabOrdersPage() {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'lab_tech') {
+  if (!session || session.user.role !== 'TECHNICIAN') {
     redirect('/auth/signin');
   }
 
