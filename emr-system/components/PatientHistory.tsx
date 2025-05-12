@@ -42,7 +42,7 @@ export default function PatientHistory({ patient, session }: Props) {
       <p><strong>Address:</strong> {patient.address}</p>
       <p><strong>Allergies:</strong> {patient.allergies || 'None'}</p>
       <p><strong>Status:</strong> {patient.is_active ? 'Active' : 'Inactive'}</p>
-      {session.user.role === 'record_officer' && !patient.is_active && (
+      {session.user.role === 'RECORD_OFFICER' && !patient.is_active && (
         <button
           onClick={handleActivate}
           className="mt-4 bg-green-600 text-white p-2 rounded-md hover:bg-green-700"

@@ -17,7 +17,7 @@ const patientSchema = z.object({
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'record_officer') {
+  if (!session || session.user.role !== 'RECORD_OFFICER') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

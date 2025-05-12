@@ -20,8 +20,7 @@ model Users {
   updated_at     DateTime         @updatedAt
   AccessLogs     AccessLogs[]     @relation("User")
   doctor         Doctors?
-  LabOrders      LabOrders[]      @relation("OrderedBy")
-  LabResults     LabResults[]     @relation("Technician")
+  labTechnician  LabTechnicians?
   MedicalHistory MedicalHistory[] @relation("Technician")
   Prescriptions  Prescriptions[]  @relation("PrescribedBy")
   SystemLogs     SystemLogs[]     @relation("PerformedBy")
@@ -77,35 +76,35 @@ model MedicalHistory {
 }
 
 model LabOrders {
-  order_id        Int          @id @default(autoincrement())
-  patient_id      Int
-  doctor_id       Int
-  ordered_by      Int
-  test_type       String
-  status          String
-  priority        String
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  ordered_by_user Users        @relation("OrderedBy", fields: [ordered_by], references: [user_id])
-  doctor          Doctors      @relation(fields: [doctor_id], references: [doctor_id])
-  patient         Patients     @relation(fields: [patient_id], references: [patient_id])
-  LabResults      LabResults[]
+  order_id     Int      @id @default(autoincrement())
+  patient_id   Int
+  doctor_id    Int
+  technician_id Int?
+  test_type    String
+  priority     String
+  status       String   @default("PENDING")
+  notes        String?
+  patient      Patients @relation(fields: [patient_id], references: [patient_id])
+  doctor       Doctors  @relation(fields: [doctor_id], references: [doctor_id])
+  technician   LabTechnicians? @relation(fields: [technician_id], references: [technician_id])
+  result       LabResults?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model LabResults {
-  result_id     Int       @id @default(autoincrement())
-  order_id      Int
-  patient_id    Int
+  result_id    Int      @id @default(autoincrement())
+  order_id     Int      @unique
   technician_id Int
-  result_data   String
-  status        String
-  is_positive   Boolean   @default(false)
-  is_viewed     Boolean   @default(false)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  technician    Users     @relation("Technician", fields: [technician_id], references: [user_id])
-  patient       Patients  @relation(fields: [patient_id], references: [patient_id])
-  order         LabOrders @relation(fields: [order_id], references: [order_id])
+  result_data  String
+  is_positive  Boolean
+  is_viewed    Boolean  @default(false)
+  patient      Patients @relation(fields: [order_id], references: [patient_id])
+  status       String   @default("PENDING")
+  order        LabOrders @relation(fields: [order_id], references: [order_id])
+  technician   LabTechnicians @relation(fields: [technician_id], references: [technician_id])
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model Diseases {
@@ -230,4 +229,14 @@ model LabTest {
   status           String   @default("AVAILABLE")
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
+}
+
+model LabTechnicians {
+  technician_id Int      @id @default(autoincrement())
+  user_id      Int      @unique
+  user         Users    @relation(fields: [user_id], references: [user_id])
+  lab_orders   LabOrders[]
+  lab_results  LabResults[]
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }

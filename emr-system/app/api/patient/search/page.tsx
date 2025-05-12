@@ -5,7 +5,7 @@ import PatientSearch from '../../../components/PatientSearch';
 
 export default async function PatientSearchPage() {
   const session = await getServerSession(authOptions);
-  if (!session || !['record_officer', 'doctor', 'nurse', 'admin'].includes(session.user.role)) {
+  if (!session || !['RECORD_OFFICER', 'DOCTOR', 'NURSE', 'ADMIN'].includes(session.user.role)) {
     redirect('/auth/signin');
   }
 

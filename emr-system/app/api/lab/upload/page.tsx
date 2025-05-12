@@ -6,16 +6,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default async function LabUploadPage({ searchParams }: { searchParams: { orderId?: string } }) {
+export default async function LabUploadPage({ searchParams }: { searchParams: { id?: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'TECHNICIAN') {
+  if (!session || session.user.role !== 'LAB_TECHNICIAN') {
     redirect('/auth/signin');
   }
 
   let order = null;
-  if (searchParams.orderId) {
+  if (searchParams.id) {
     order = await prisma.labOrders.findUnique({
-      where: { order_id: parseInt(searchParams.orderId) },
+      where: { order_id: parseInt(searchParams.id) },
       include: { patient: true },
     });
   }

@@ -6,15 +6,16 @@ import { getToken } from 'next-auth/jwt';
 const publicPaths = ['/', '/auth/signin', '/auth/signup'];
 
 // Define user roles type
-type UserRole = 'ADMIN' | 'DOCTOR' | 'NURSE' | 'PHARMACIST' | 'TECHNICIAN';
+type UserRole = 'ADMIN' | 'DOCTOR' | 'NURSE' | 'PHARMACIST' | 'LAB_TECHNICIAN' | 'RECORD_OFFICER';
 
 // Define role-based paths
-const roleBasedPaths: Record<UserRole, string> = {
+export const roleBasedPaths: Record<UserRole, string> = {
   ADMIN: '/admin',
   DOCTOR: '/doctor',
   NURSE: '/nurse',
   PHARMACIST: '/pharmacist',
-  TECHNICIAN: '/technician',
+  LAB_TECHNICIAN: '/lab',
+  RECORD_OFFICER: '/record-officer',
 };
 
 export async function middleware(request: NextRequest) {
@@ -47,6 +48,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(userRolePath, request.url));
   }
 
+  if (!token && pathname.startsWith('/app')) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  }
+
   return NextResponse.next();
 }
 
@@ -60,5 +65,6 @@ export const config = {
      * - favicon.ico (favicon file)
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/app/:path*',
   ],
 }; 

@@ -1,33 +1,53 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    console.log('Fetching patients...');
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
-      console.log('No session found');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || session.user.role !== 'NURSE') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    if (session.user.role !== 'NURSE') {
-      console.log('User is not a nurse:', session.user.role);
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
+    // Get all patients with their cases
     const patients = await prisma.patients.findMany({
-      where: {
-        is_active: true
+      include: {
+        Cases: {
+          include: {
+            doctor: {
+              include: {
+                user: {
+                  select: {
+                    full_name: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          }
+        },
+        Diagnoses: {
+          include: {
+            disease: true
+          },
+          orderBy: {
+            created_at: 'desc'
+          },
+          take: 1
+        }
       },
       orderBy: {
         full_name: 'asc'
       }
     });
 
-    console.log(`Found ${patients.length} patients`);
     return NextResponse.json(patients);
   } catch (error) {
     console.error('Error fetching patients:', error);

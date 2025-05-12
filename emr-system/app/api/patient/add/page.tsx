@@ -5,7 +5,7 @@ import AddPatient from '../../../components/AddPatient';
 
 export default async function AddPatientPage() {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'record_officer') {
+  if (!session || session.user.role !== 'RECORD_OFFICER') {
     redirect('/auth/signin');
   }
 

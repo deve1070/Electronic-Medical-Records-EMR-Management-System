@@ -1,10 +1,9 @@
-import NextAuth, { type NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import prisma from '../../../../lib/prisma';
-import bcryptjs from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
-export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -22,11 +21,11 @@ export const authOptions: NextAuthOptions = {
             where: { username: credentials.username },
           });
 
-          if (!user || !user.is_active) {
+          if (!user) {
             return null;
           }
 
-          const isPasswordValid = await bcryptjs.compare(credentials.password, user.password_hash);
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password_hash);
 
           if (!isPasswordValid) {
             return null;
@@ -45,29 +44,33 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
+    async jwt({ token, user }) {
+      try {
+        if (user) {
+          token.id = user.id;
+          token.role = user.role;
+        }
+        return token;
+      } catch (error) {
+        console.error('JWT callback error:', error);
+        return token;
       }
-      return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
+    async session({ session, token }) {
+      try {
+        if (session.user) {
+          session.user.id = token.id;
+          session.user.role = token.role;
+        }
+        return session;
+      } catch (error) {
+        console.error('Session callback error:', error);
+        return session;
       }
-      return session;
     },
   },
   pages: {
     signIn: '/auth/signin',
-    signOut: '/auth/signout',
-    error: '/auth/error',
-  },
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 };
 

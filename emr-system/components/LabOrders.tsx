@@ -56,7 +56,7 @@ export default function LabOrders() {
                 <td className="p-2">{order.orderedBy.full_name}</td>
                 <td className="p-2">
                   <Link
-                    href={`/lab/upload?orderId=${order.order_id}`}
+                    href={`/lab/upload?id=${order.order_id}`}
                     className="text-blue-600 hover:underline"
                   >
                     Upload Result

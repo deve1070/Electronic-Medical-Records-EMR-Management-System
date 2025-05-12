@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function LabUploadForm({ order }: Props) {
-  const [orderId, setOrderId] = useState(order?.order_id.toString() || '');
+  const [id, setId] = useState(order?.order_id.toString() || '');
   const [resultValue, setResultValue] = useState('');
   const [unit, setUnit] = useState('');
   const [testDate, setTestDate] = useState('');
@@ -37,7 +37,7 @@ export default function LabUploadForm({ order }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderId: parseInt(orderId),
+          id: parseInt(id),
           resultValue: parseFloat(resultValue),
           unit,
           testDate,
@@ -50,7 +50,7 @@ export default function LabUploadForm({ order }: Props) {
       }
 
       setSuccess('Lab result uploaded successfully');
-      setOrderId('');
+      setId('');
       setResultValue('');
       setUnit('');
       setTestDate('');
@@ -64,14 +64,14 @@ export default function LabUploadForm({ order }: Props) {
     <div className="bg-white p-6 rounded-lg shadow-md">
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="orderId" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="id" className="block text-sm font-medium text-gray-700">
             Order ID
           </label>
           <input
-            id="orderId"
+            id="id"
             type="number"
-            value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
+            value={id}
+            onChange={(e) => setId(e.target.value)}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             required
             disabled={!!order}

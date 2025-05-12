@@ -112,7 +112,7 @@ export default function PendingTestsPage() {
                     </p>
                   </div>
                   <div className="flex justify-end items-end">
-                    <Link href={`/technician/upload?orderId=${order.order_id}`}>
+                    <Link href={`/technician/upload?id=${order.order_id}`}>
                       <Button>Upload Results</Button>
                     </Link>
                   </div>

@@ -5,7 +5,7 @@ import RegisteredPatients from '../../../../components/RegisteredPatients';
 
 export default async function RegisteredPatientsPage() {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'record_officer') {
+  if (!session || session.user.role !== 'RECORD_OFFICER') {
     redirect('/auth/signin');
   }
 

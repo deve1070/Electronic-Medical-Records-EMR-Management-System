@@ -16,20 +16,18 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white">
-      <div className="text-center space-y-6 p-8">
-        <h1 className="text-4xl font-bold text-blue-900">Welcome to MediCare EMR</h1>
-        <p className="text-xl text-gray-600 max-w-2xl">
-          Your comprehensive Electronic Medical Records Management System
-        </p>
-        <div className="space-x-4">
-          <Link href="/auth/signin">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Sign In
-            </Button>
-          </Link>
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-4xl font-bold mb-4">Welcome to EMR System</h1>
+      <p className="text-lg mb-8">Your trusted platform for electronic medical records management.</p>
+      <div className="flex space-x-4">
+        <Image src="/health-icon.png" alt="Health Icon" width={100} height={100} />
+        <Image src="/medical-icon.png" alt="Medical Icon" width={100} height={100} />
       </div>
+      <Link href="/auth/signin">
+        <button className="mt-8 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Sign In
+        </button>
+      </Link>
     </div>
   );
 }
